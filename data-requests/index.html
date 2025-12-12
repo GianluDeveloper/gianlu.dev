@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="x-ua-compatible" content="ie=edge"><meta name="color-scheme" content="light dark"><title>Data Requests | Gianlu.dev</title><meta name="description" content="Request access, correction, or deletion of personal data related to your interactions with this site."><link rel="canonical" href="https://gianlu.dev/data-requests/"><meta name="robots" content="index,follow"><meta property="og:site_name" content="Gianlu.dev"><meta property="og:title" content="Data Requests | Gianlu.dev"><meta property="og:description" content="Request access, correction, or deletion of personal data related to your interactions with this site."><meta property="og:type" content="website"><meta property="og:url" content="https://gianlu.dev/data-requests/"><meta property="og:image" content="https://gianlu.dev/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Data Requests | Gianlu.dev"><meta name="twitter:description" content="Request access, correction, or deletion of personal data related to your interactions with this site."><meta name="twitter:image" content="https://gianlu.dev/og.png"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="sitemap" href="/sitemap.xml" type="application/xml"><script type="application/ld+json">
+      {JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: SITE.name,
+        url: SITE.url,
+      })}
+    </script><link rel="stylesheet" href="/_astro/GianluDeveloper.D7RdCA_S.css"></head> <body> <a class="skip-link" href="#main">Skip to content</a> <header class="site-header"> <div class="container site-header-inner"> <a class="brand" href="/"> <strong>Gianlu.dev</strong> <span>Full‑stack web developer</span> </a> <nav class="site-nav" aria-label="Primary"> <ul> <li> <a href="/">Home</a> </li><li> <a href="/about/">About</a> </li><li> <a href="/services/">Services</a> </li><li> <a href="/work/">Work</a> </li><li> <a href="/contact/">Contact</a> </li><li> <a href="/legal/">Legal</a> </li> </ul> </nav> </div> </header> <main id="main"> <div class="container">  <article class="prose"> <h1>Data requests</h1> <p>
+You can request access, correction, or deletion of personal data related to your interactions with this site (for example, a message you sent via the contact form).
+</p> <h2>What to include</h2> <ul> <li>Your name and email address used when contacting me</li> <li>The type of request (access / correction / deletion)</li> <li>Any helpful details (approximate dates, relevant URLs)</li> </ul> <h2>Identity verification</h2> <p>
+To protect your data, I may ask for reasonable verification before processing the request.
+</p> <h2>Send a request</h2> <p>
+Email <a href="mailto:web@gianlu.dev">web@gianlu.dev</a> with the subject “Data request”, or use this helper form (opens your email client).
+</p> </article> <section class="card" style="margin-top: 18px"> <form id="data-request-form" action="mailto:web@gianlu.dev" method="get" enctype="text/plain"> <div class="field"> <label for="dr-name">Full name</label> <input id="dr-name" name="name" autocomplete="name" required> </div> <div class="field"> <label for="dr-email">Your email</label> <input id="dr-email" name="email" type="email" autocomplete="email" required> </div> <div class="field"> <label for="dr-type">Request type</label> <select id="dr-type" name="type" required> <option value="access">Access</option> <option value="correction">Correction</option> <option value="deletion">Deletion</option> </select> </div> <div class="field"> <label for="dr-when">Approximate date(s) (optional)</label> <input id="dr-when" name="when" placeholder="e.g., Oct 2025"> </div> <div class="field"> <label for="dr-details">Details</label> <textarea id="dr-details" name="details" required></textarea> </div> <div class="visually-hidden" aria-hidden="true"> <label for="dr-fax">Fax</label> <input id="dr-fax" name="fax" tabindex="-1" autocomplete="off"> </div> <div class="meta-row"> <button class="btn primary" type="submit">Open email draft</button> <button class="btn" type="button" data-copy-template>Copy email template</button> </div> <p id="dr-status" class="help" role="status" style="margin-top: 10px"></p> </form> </section> <script>
+    (() => {
+      const to = {JSON.stringify(SITE.privacyEmail)};
+      const form = document.getElementById("data-request-form");
+      const status = document.getElementById("dr-status");
+      if (!form || !status) return;
+
+      const buildTemplate = (fd) => {
+        const name = String(fd.get("name") || "").trim();
+        const email = String(fd.get("email") || "").trim();
+        const type = String(fd.get("type") || "").trim();
+        const when = String(fd.get("when") || "").trim();
+        const details = String(fd.get("details") || "").trim();
+
+        const subject = `gianlu.dev — Data request (${type}) — ${email || name || ""}`.trim();
+
+        const lines = [];
+        lines.push("Hello,");
+        lines.push("");
+        lines.push("I’m making a data request regarding my interactions with gianlu.dev.");
+        lines.push("");
+        lines.push("REQUEST");
+        lines.push(`Type: ${type}`);
+        if (when) lines.push(`Approximate date(s): ${when}`);
+        lines.push("");
+        lines.push("IDENTITY");
+        lines.push(`Full name: ${name}`);
+        lines.push(`Email: ${email}`);
+        lines.push("");
+        lines.push("DETAILS");
+        lines.push(details);
+        lines.push("");
+        lines.push("I understand identity verification may be required.");
+        lines.push("");
+        lines.push("—");
+        lines.push("Sent from gianlu.dev data request form");
+
+        return { subject, body: lines.join("\\n") };
+      };
+
+      const copyToClipboard = async (text) => {
+        try {
+          await navigator.clipboard.writeText(text);
+          return true;
+        } catch (err) {
+          try {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.setAttribute("readonly", "");
+            ta.style.position = "fixed";
+            ta.style.left = "-9999px";
+            document.body.appendChild(ta);
+            ta.select();
+            const ok = document.execCommand("copy");
+            ta.remove();
+            return ok;
+          } catch {
+            return false;
+          }
+        }
+      };
+
+      const openMailto = (subject, body) => {
+        const s = encodeURIComponent(subject);
+        const b = encodeURIComponent(body);
+        const mailto = `mailto:${to}?subject=${s}&body=${b}`;
+        if (mailto.length > 1800) {
+          status.textContent =
+            "Your message is long. Copying the template to clipboard; paste it into a new email to " + to + ".";
+          copyToClipboard(body).then(() => {
+            window.location.href = `mailto:${to}?subject=${s}`;
+          });
+          return;
+        }
+        status.textContent = "Opening your email client…";
+        window.location.href = mailto;
+      };
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const fd = new FormData(form);
+        const honeypot = String(fd.get("fax") || "").trim();
+        if (honeypot) {
+          status.textContent = "Thanks!";
+          form.reset();
+          return;
+        }
+
+        const email = String(fd.get("email") || "").trim();
+        const name = String(fd.get("name") || "").trim();
+        const type = String(fd.get("type") || "").trim();
+        const details = String(fd.get("details") || "").trim();
+        if (!email || !name || !type || !details) {
+          status.textContent = "Please fill in all fields.";
+          return;
+        }
+
+        const tpl = buildTemplate(fd);
+        openMailto(tpl.subject, tpl.body);
+      });
+
+      form.querySelector("[data-copy-template]")?.addEventListener("click", async () => {
+        const fd = new FormData(form);
+        const tpl = buildTemplate(fd);
+        const ok = await copyToClipboard(tpl.body);
+        status.textContent = ok ? "Template copied to clipboard." : "Couldn’t copy automatically. Please email " + to + ".";
+      });
+    })();
+  </script>  </div> </main> <footer class="site-footer"> <div class="container footer-inner"> <div> <strong>Contact</strong> <div class="help">
+Email: <a href="mailto:web@gianlu.dev">web@gianlu.dev</a> </div> <div class="help">Location: Italy (remote)</div> <ul class="footer-links" aria-label="Footer links"> <li><a href="/contact/">Contact</a></li> <li><a href="/privacy/">Privacy Policy</a></li> <li><a href="/cookies/">Cookie Policy</a></li> <li><a href="/terms/">Terms of Use</a></li> <li><a href="/security/">Security</a></li> <li> <button type="button" data-open-cookie-preferences>Change cookie preferences</button> </li> </ul> </div> <div class="help"> <div>© 2025 Gianlu.dev. All rights reserved.</div> <div>
+GitHub: <a href="https://github.com/GianluDeveloper" rel="noopener noreferrer">GianluDeveloper</a> </div> <div>
+Repo mirror: <a href="https://gianludeveloper.github.io/" rel="noopener noreferrer">gianludeveloper.github.io</a> </div> </div> </div> </footer> <section class="cookie-consent" hidden data-cookie-consent> <div class="panel" role="dialog" aria-modal="true" aria-labelledby="cookie-title" aria-describedby="cookie-desc"> <h2 id="cookie-title">Cookie preferences</h2> <p id="cookie-desc">
+This site uses essential cookies to remember your preferences. Analytics/marketing cookies are disabled by default and only run if you opt in.
+      See the <a href="/cookies/">Cookie Policy</a>.
+</p> <form data-cookie-form> <fieldset aria-label="Cookie categories"> <div class="check"> <input id="cookie-necessary" type="checkbox" checked disabled> <div> <label for="cookie-necessary">Necessary</label> <div class="help">Required for basic functionality (e.g., saving your cookie preferences).</div> </div> </div> <div class="check"> <input id="cookie-analytics" name="analytics" type="checkbox"> <div> <label for="cookie-analytics">Analytics</label> <div class="help">Helps understand site usage. Disabled until you opt in.</div> </div> </div> <div class="check"> <input id="cookie-marketing" name="marketing" type="checkbox"> <div> <label for="cookie-marketing">Marketing</label> <div class="help">Used for advertising measurement (e.g., pixels). Disabled until you opt in.</div> </div> </div> </fieldset> <div class="actions"> <button class="btn primary" type="button" data-consent-action="accept-all">Accept all</button> <button class="btn" type="button" data-consent-action="reject">Reject non-essential</button> <button class="btn" type="button" data-consent-action="save">Save preferences</button> </div> <p class="help" style="margin-top: 10px">
+You can change this anytime via “Change cookie preferences” in the footer.
+</p> </form> </div> </section> <script src="/scripts/consent.js" defer></script> </body> </html>

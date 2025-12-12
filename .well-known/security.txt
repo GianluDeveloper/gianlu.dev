@@ -1,0 +1,5 @@
+Contact: mailto:web@gianlu.dev
+Expires: 2026-12-12T00:00:00.000Z
+Preferred-Languages: en, it
+Policy: https://gianlu.dev/security/
+
